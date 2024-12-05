@@ -8,7 +8,7 @@
 
 {% block conteudo %}
 
-    <button type="button" class="btn btn-primary">Novo Produto</button> <br><br>
+    <button type="button" class="btn btn-primary" onclick="location.href='{% url 'form_categoria' %}'">Novo Produto</button> <br><br>
     <table class="table table-bordered table-hover">
         <thead class="thead-dark">
             <tr>
@@ -26,7 +26,8 @@
                 <td>{{categoria.ordem}}</td>
                 <td>
                     <button type="button" class="btn btn-info">Detalhes</button>
-                    <button type="button" class="btn btn-warning">Alterar</button>
+                    <!-- <button type="button" class="btn btn-warning">Editar</button> -->
+                    <button type="button" class="btn btn-warning" onclick="location.href='{% url 'editar_categoria' pk = categoria.id %}'">Editar</button>
                     <button type="button" class="btn btn-danger">Excluir</button>
                 </td>
             </tr>

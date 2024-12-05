@@ -82,6 +82,8 @@ DATABASES = {
   'default': dj_database_url.parse('postgres://neondb_owner:xgtpikmY3bA7@ep-super-cherry-a4ljnzil-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require') 
 }
 
+# 'default': dj_database_url.parse('')
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
