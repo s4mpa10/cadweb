@@ -31,18 +31,21 @@ def form_categoria(request):
 
 def editar_categoria(request, pk):
     categoria = Categoria.objects.get(pk=pk)
+
     if (request.method == 'POST'):
         form = CategoriaForm(request.POST, instance=categoria)
         if form.is_valid():
-            categoria = form.save(commit=False)
-            categoria.nome = form.data['nome']
-            categoria.ordem = form.data['ordem']
-            categoria.save()
-            return redirect('lista')
+            categoria = form.save()
+            lista=[]
+            lista.append(categoria)
+            return redirect('categoria', {'lista': lista})
+            # categoria.nome = form.data['nome']
+            # categoria.ordem = form.data['ordem']
+            # categoria.save()
     else: 
         form = CategoriaForm(instance=categoria)
     
-    contexto = {
-        'form': form,
-    }
-    return render(request, 'categoria/formulario.html', contexto)
+    # contexto = {
+    #     'form': form,
+    # }
+    return render(request, 'categoria/formulario.html', {'form':form,})
