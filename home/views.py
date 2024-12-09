@@ -7,7 +7,7 @@ def index(request):
 
 def categoria(request): 
     contexto = {
-        'lista': Categoria.objects.all().order_by('id'),
+        'lista': Categoria.objects.all().order_by('-id'),
     }
     return render(request, 'categoria/lista.html', contexto)
 
@@ -60,7 +60,7 @@ def delete_categotia(request, pk):
 def detalhe_categoria(request, pk):
     categoria = Categoria.objects.get(pk=pk)
     form = CategoriaForm(instance=categoria)
-    print(form)
+    # print(form)
     contexto = {
         'form': form,
     }

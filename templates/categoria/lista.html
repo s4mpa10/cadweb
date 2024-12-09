@@ -38,9 +38,24 @@
     <script>
         function confirmClose(url) {
             const confirmar = confirm("Confirme para excluir a categoria selecionada ?");
+            if (confirmar) {
+                window.location.href = location.href='{% url 'lista' %}';     
+            }
             window.location.href = location.href='{% url 'lista' %}';   
         }
     </script>
+
+    {% comment %} <script>
+        function confirmClose(url) {
+            const confirmar = confirm("Confirme para excluir o produto ?");
+            if (confirmar) {
+                window.location.href = url;
+            }
+            else{
+                window.location.href = location.href='{% url 'produtos' %}';
+            }
+        }
+    </script> {% endcomment %}
 
 
 {% endblock conteudo %}
