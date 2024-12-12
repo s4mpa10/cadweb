@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from .models import *
 from .forms import *
 
@@ -15,22 +16,25 @@ def form_categoria(request):
     if (request.method == 'POST'):
         form = CategoriaForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('lista')
-            # categoria = form.save(commit=False)
-            # categoria.nome = form.data['nome']
-            # categoria.ordem = form.data['ordem']
+            salvando = form.save()
+            lista=[]
+            lista.append(salvando)
+            messages.success(request, 'Operação realizda com Sucesso.')
+            return render(request, 'categoria/lista.html', {'lista':lista,})
+            # return redirect('lista')
+
     else: 
         form = CategoriaForm()
     
-    # contexto = {
-    #  'form': form, #Caso tenha mais informações para serem passada, utilizar esse contexto   
-    # }
     return render(request, 'categoria/formulario.html', {'form': form,})
 
 
-def editar_categoria(request, pk):
-    categoria = Categoria.objects.get(pk=pk)
+def editar_categoria(request, id):
+    try:
+        categoria = Categoria.objects.get(pk=id)
+    except:
+        messages.error(request, 'Registro não encontrado')
+        return redirect('lista')
 
     if (request.method == 'POST'):
         form = CategoriaForm(request.POST, instance=categoria)
@@ -38,27 +42,30 @@ def editar_categoria(request, pk):
             categoria = form.save()
             lista=[]
             lista.append(categoria)
-            return redirect('lista')
+            return render(request, 'categoria/lista.html', {'lista':lista,})
+            # return redirect('lista')
 
     else: 
         form = CategoriaForm(instance=categoria)
     
-    # contexto = {
-    #     'form': form,
-    # }
     return render(request, 'categoria/formulario.html', {'form':form,})
 
-def delete_categotia(request, pk):
-    categoria = Categoria.objects.get(pk=pk)
+
+def delete_categotia(request, id):
+    try: 
+        categoria = Categoria.objects.get(pk=id)
+    except:
+        messages.error(request, 'Registro não encontrado')
+        return redirect('lista')
+    
     categoria.delete()
-    form = CategoriaForm()
-    # contexto = {
-    #     'form': form,
-    # }
+    messages.success(request, 'Operação realizda com Sucesso.')
+    # form = CategoriaForm()
     return  render(request, 'categoria/lista.html')
 
-def detalhe_categoria(request, pk):
-    categoria = Categoria.objects.get(pk=pk)
+
+def detalhe_categoria(request, id):
+    categoria = Categoria.objects.get(pk=id)
     form = CategoriaForm(instance=categoria)
     # print(form)
     contexto = {

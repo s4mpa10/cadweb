@@ -15,3 +15,29 @@ class CategoriaForm(forms.ModelForm):
                'nonme': 'Informe o nome do produto: ',
                'ordem': 'Informe o número da ordem: ',
           }
+     def clean_nome(self):
+          nome = self.cleaned_data.get('nome')
+          if len(nome) < 3:
+               raise forms.ValidationError("O nome deve ter pelo menos 3 caracteres.")
+          return nome
+     
+     def clean_ordem(self):
+          ordem = self.cleaned_data.get('ordem')
+          if ordem <= 0:
+               raise forms.ValidationError("O campo ordem tem que ser superior a 0.")
+          return ordem
+
+     # def clean(self):
+     #      cleaned_data = super().clean()
+     #      nome = cleaned_data().get('nome')
+     #      ordem = cleaned.data().get('ordem')
+
+     #      if len(nome) < 3:
+     #           raise forms.ValidationError("O nome deve ter pelo menos 3 caracteres.")
+     #      return nome
+
+     # Validação generica:
+     # def validar_valor(valor):
+     #      if len(valor) < 3:
+     #           raise forms.ValidationError("O campo deve ter pelo menos 3 caracteres.")
+     #      return valor
