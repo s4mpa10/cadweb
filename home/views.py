@@ -21,8 +21,7 @@ def form_categoria(request):
             lista.append(salvando)
             messages.success(request, 'Operação realizda com Sucesso.')
             return render(request, 'categoria/lista.html', {'lista':lista,})
-            # return redirect('lista')
-
+        
     else: 
         form = CategoriaForm()
     
@@ -43,7 +42,6 @@ def editar_categoria(request, id):
             lista=[]
             lista.append(categoria)
             return render(request, 'categoria/lista.html', {'lista':lista,})
-            # return redirect('lista')
 
     else: 
         form = CategoriaForm(instance=categoria)
@@ -51,19 +49,24 @@ def editar_categoria(request, id):
     return render(request, 'categoria/formulario.html', {'form':form,})
 
 
-def delete_categotia(request, id):
-    try: 
+def remover_categotia(request, id):
+    try:
         categoria = Categoria.objects.get(pk=id)
+        categoria.delete()
+        messages.success(request, 'Exclusão realizda com Sucesso.')
     except:
         messages.error(request, 'Registro não encontrado')
         return redirect('lista')
     
-    categoria.delete()
-    messages.success(request, 'Operação realizda com Sucesso.')
-    return  render(request, 'categoria/lista.html')
+    return redirect('lista')
+    # return render(request, 'categoria/lista.html')
 
 
 def detalhe_categoria(request, id):
-    categoria = get_object_or_404(Categoria, pk=id)
-    # print(form)
-    return render(request, 'categoria/detail.html', {'categoria':categoria,})
+    try:
+        categoria = get_object_or_404(Categoria, pk=id)
+    except:
+        messages.error(request, 'Registro não encontrado')
+        return redirect('lista')
+
+    return render(request, 'categoria/detalhes.html', {'categoria':categoria,})
