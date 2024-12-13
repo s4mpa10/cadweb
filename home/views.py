@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import *
 from .forms import *
@@ -60,15 +60,10 @@ def delete_categotia(request, id):
     
     categoria.delete()
     messages.success(request, 'Operação realizda com Sucesso.')
-    # form = CategoriaForm()
     return  render(request, 'categoria/lista.html')
 
 
 def detalhe_categoria(request, id):
-    categoria = Categoria.objects.get(pk=id)
-    form = CategoriaForm(instance=categoria)
+    categoria = get_object_or_404(Categoria, pk=id)
     # print(form)
-    contexto = {
-        'form': form,
-    }
-    return render(request, 'categoria/detail.html', contexto)
+    return render(request, 'categoria/detail.html', {'categoria':categoria,})
