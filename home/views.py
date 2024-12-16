@@ -49,7 +49,7 @@ def editar_categoria(request, id):
     return render(request, 'categoria/formulario.html', {'form':form,})
 
 
-def remover_categotia(request, id):
+def remover_categoria(request, id):
     try:
         categoria = Categoria.objects.get(pk=id)
         categoria.delete()
