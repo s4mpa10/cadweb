@@ -21,8 +21,8 @@ class CategoriaForm(forms.ModelForm):
           if len(nome) < 3:
                raise forms.ValidationError("O nome deve ter pelo menos 3 caracteres.")
           
-          if Categoria.objects.filter(nome=nome).exists():
-               raise forms.ValidationError("Já existe uma categoria com esse mesmo nome.")
+          # if Categoria.objects.filter(nome=nome).exists():
+          #      raise forms.ValidationError("Já existe uma categoria com esse mesmo nome.")
           
           return nome
      
