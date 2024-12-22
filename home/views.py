@@ -70,3 +70,9 @@ def detalhe_categoria(request, id):
         return redirect('lista')
 
     return render(request, 'categoria/detalhes.html', {'categoria':categoria,})
+
+def cliente(request):
+    contexto={
+        'listaCliente': Cliente.objects.all().order_by('-id')
+    }
+    return render(request,'cliente/lista.html', contexto)

@@ -1,6 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from .models import *
+from datetime import date, timedelta
 
 class CategoriaForm(forms.ModelForm):
      class Meta:
@@ -35,7 +36,23 @@ class CategoriaForm(forms.ModelForm):
           #      raise forms.ValidationError("O númera da ordem digitada já esta sendo utilizada.")
           
           return ordem
+     
+class ClienteForm(forms.ModelForm):
+     class Meta:
+          model = Cliente 
+          fields = ['nome', 'cpf', 'datanasc']
+          widgets = {
+               'nome':forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome'}),
+               'cpf':forms.TextInput(attrs={'class': 'cpf form-control', 'placeholder': 'CPF'}),
+               'datanasc':forms.DateInput(attrs={'class': 'data form-control', 'placeholder': 'Data de Nascimento'}, format='%d/%m/%Y'),
+          }
+     
+     def clean_datanascimento(self):
+          datanasc = self.cleaned_data.get('datanasc')
+          if datanasc >= date.today():
+               raise forms.ValidationError("A data de nascimento não pode ser maior que a data atual")
 
+     
      # def clean(self):
      #      cleaned_data = super().clean()
      #      nome = cleaned_data().get('nome')

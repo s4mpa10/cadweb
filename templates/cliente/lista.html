@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block titulo_conteudo %}
+
+    Listagem de Clientes
+
+{% endblock titulo_conteudo %}
+
+{% block conteudo %}
+    <div class="barrabotoes">
+        <button type="button" class="btn btn-primary btn-sm" onclick="location.href='{% url 'form_categoria' %}'">Inserir Novo</button> 
+        <button type="button" class="btn btn-primary btn-sm" onclick="location.href='{% url 'lista' %}'">Recarregar</button> 
+        </div>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nome</th>
+                <th scope="col">C.P.F</th>
+                <th scope="col">Data de Nascimento</th>
+                {% comment %} <th scope="col">Ações</th> {% endcomment %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in listaCliente %}
+            <tr>
+                <td>{{cliente.id}}</td>
+                <td>{{cliente.nome}}</td>
+                <td>{{cliente.cpf}}</td>
+                <td>{{cliente.datanasc}}</td>
+                {% comment %} <td>
+                    <button type="button" class="btn btn-info" onclick="location.href='{% url 'detalhe_categoria' categoria.id%}'">Detalhes</button>
+                    <button type="button" class="btn btn-warning" onclick="location.href='{% url 'editar_categoria' categoria.id %}'">Alterar</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmClose('{% url 'remover_categoria' categoria.id %}')">Excluir</button>
+                </td> {% endcomment %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% comment %} <script> 
+        function confirmClose(url) {
+            const confirmar = confirm("Confirme para excluir a categoria selecionada?");
+            if (confirmar) {
+                window.location.href = url; 
+            }
+        }
+    </script> {% endcomment %}
+    
+{% endblock conteudo %}
