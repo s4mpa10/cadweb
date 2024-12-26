@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from .models import *
-from datetime import date, timedelta
+from datetime import date
 
 class CategoriaForm(forms.ModelForm):
      class Meta:
