@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import *
 from .forms import *
+from datetime import date
 
 def index(request):
     return render(request,'index.html')
@@ -134,4 +135,5 @@ def detalhe_cliente(request, id):
         return redirect('listaCliente')
 
     return render(request, 'cliente/detalhes.html', {'cliente':cliente,})
+
 
