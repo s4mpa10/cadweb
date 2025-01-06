@@ -71,9 +71,9 @@ class ClienteForm(forms.ModelForm):
      
      def clean_cpf(self):
           cpf = self.cleaned_data.get('cpf')
-          if not self.instance.pk:
-               if Cliente.objects.filter(cpf=cpf).exists():
-                    raise forms.ValidationError("Já existe um cliente com esse C.P.F.")
+          # if not self.instance.pk:
+          #      if Cliente.objects.filter(cpf=cpf).exists():
+          #           raise forms.ValidationError("Já existe um cliente com esse C.P.F.")
 
           if self.instance.pk:
                if len(cpf) != 14:
