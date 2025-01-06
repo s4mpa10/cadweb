@@ -36,8 +36,6 @@ class CategoriaForm(forms.ModelForm):
           return ordem
      
 
-
-
 class ClienteForm(forms.ModelForm):
      class Meta:
           model = Cliente 
@@ -71,6 +69,22 @@ class ClienteForm(forms.ModelForm):
          if datanasc >= date.today():
              raise forms.ValidationError("A data de nascimento não pode ser maior ou igual à data atual.")
          return datanasc
+     
+     def __init__(self, *args, **kwargs):
+          super(ProdutoForm, self).__init__(*args, **kwargs)
+          self.fields['preco'].localize = True
+          self.fields['preco'].widget.is_localized = True
+
+class ProdutoForm(forms.ModelForm):
+     class Meta:
+          model = Produto
+          fields = ['nome', 'preco', 'categoria', 'img_base64']
+          widgets = {
+               'categoria': forms.Select(attrs={'class': 'form-control'}),
+               'nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome'}),
+               'img_base64': forms.HiddenInput(),
+               'preco': forms.TextInput(attrs={'class': 'money form-control', 'maxlength': 500, 'placeholder': '0.000,00'})
+          }
 
      # def clean_nome(self):
      #      nome = self.cleaned_data.get('nome') #novo valor ao adicionar
