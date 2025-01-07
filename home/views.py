@@ -146,58 +146,57 @@ def produto(request):
 
 def form_produto(request):
     if (request.method == 'POST'):
-        form = ClienteForm(request.POST)
+        form = ProdutoForm(request.POST)
         if form.is_valid():
             salvando = form.save()
-            listaCliente=[]
-            listaCliente.append(salvando)
+            listaProduto=[]
+            listaProduto.append(salvando)
             messages.success(request, 'Operação realizda com Sucesso.')
-            return render(request, 'cliente/lista.html', {'listaCliente':listaCliente,})
+            return render(request, 'produto/lista.html', {'listaProduto':listaProduto,})
         
     else: 
-        form = ClienteForm()
+        form = ProdutoForm()
     
-    return render(request, 'cliente/formulario.html', {'form': form,})
+    return render(request, 'produto/formulario.html', {'form': form,})
 
 
-def editar_cliente(request, id):
+def editar_produto(request, id):
     try:
-        cliente = Cliente.objects.get(pk=id)
+        produto = Produto.objects.get(pk=id)
     except:
         messages.error(request, 'Registro não encontrado')
-        return redirect('listaCliente')
+        return redirect('listaProduto')
 
     if (request.method == 'POST'):
-        form = ClienteForm(request.POST, instance=cliente)
+        form = ProdutoForm(request.POST, instance=produto)
         if form.is_valid():
-            cliente = form.save()
-            listaCliente=[]
-            listaCliente.append(cliente)
-            return render(request, 'cliente/lista.html', {'listaCliente':listaCliente,})
+            produto = form.save()
+            listaProduto=[]
+            listaProduto.append(produto)
+            return render(request, 'produto/lista.html', {'listaProduto':listaProduto,})
 
     else: 
-        form = ClienteForm(instance=cliente)
+        form = ProdutoForm(instance=produto)
     
-    return render(request, 'cliente/formulario.html', {'form':form,})
+    return render(request, 'produto/formulario.html', {'form':form,})
 
-
-def remover_cliente(request, id):
+def remover_produto(request, id):
     try:
-        cliente = Cliente.objects.get(pk=id)
-        cliente.delete()
+        produto = Produto.objects.get(pk=id)
+        produto.delete()
         messages.success(request, 'Exclusão realizda com Sucesso.')
     except:
         messages.error(request, 'Registro não encontrado')
-        return redirect('listaCliente')
+        return redirect('listaProduto')
     
-    return redirect('listaCliente')
+    return redirect('listaProduto')
 
-def detalhe_cliente(request, id):
+def detalhe_produto(request, id):
     try:
-        cliente = get_object_or_404(Cliente, pk=id)
+        produto = get_object_or_404(Produto, pk=id)
     except:
         messages.error(request, 'Registro não encontrado')
-        return redirect('listaCliente')
+        return redirect('listaProduto')
 
-    return render(request, 'cliente/detalhes.html', {'cliente':cliente,})
+    return render(request, 'produto/detalhes.html', {'produto':produto,})
 

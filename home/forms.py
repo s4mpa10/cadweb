@@ -13,7 +13,7 @@ class CategoriaForm(forms.ModelForm):
                'ordem': forms.NumberInput(attrs={'class': 'inteiro form-control', 'placeholder': 'Ordem'}),
           }
           labels = {
-               'nonme': 'Informe o nome do produto: ',
+               'nome': 'Informe o nome do produto: ',
                'ordem': 'Informe o número da ordem: ',
           }
 
@@ -48,7 +48,6 @@ class ClienteForm(forms.ModelForm):
 
      def clean_nome(self):
          nome = self.cleaned_data.get('nome')
-         # Verificar se o nome já existe em outro cliente
          if Cliente.objects.filter(nome=nome).exclude(pk=self.instance.pk).exists():
              raise forms.ValidationError("Já existe um cliente com esse nome.")
          if len(nome) < 3:
@@ -57,7 +56,6 @@ class ClienteForm(forms.ModelForm):
 
      def clean_cpf(self):
          cpf = self.cleaned_data.get('cpf')
-         # Verificar se o CPF já existe em outro cliente
          if Cliente.objects.filter(cpf=cpf).exclude(pk=self.instance.pk).exists():
              raise forms.ValidationError("Já existe um cliente com esse C.P.F.")
          if len(cpf) != 14:  # Exemplo: "000.000.000-00"
@@ -70,10 +68,6 @@ class ClienteForm(forms.ModelForm):
              raise forms.ValidationError("A data de nascimento não pode ser maior ou igual à data atual.")
          return datanasc
      
-     def __init__(self, *args, **kwargs):
-          super(ProdutoForm, self).__init__(*args, **kwargs)
-          self.fields['preco'].localize = True
-          self.fields['preco'].widget.is_localized = True
 
 class ProdutoForm(forms.ModelForm):
      class Meta:
@@ -83,48 +77,19 @@ class ProdutoForm(forms.ModelForm):
                'categoria': forms.Select(attrs={'class': 'form-control'}),
                'nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome'}),
                'img_base64': forms.HiddenInput(),
-               'preco': forms.TextInput(attrs={'class': 'money form-control', 'maxlength': 500, 'placeholder': '0.000,00'})
+               'preco': forms.TextInput(attrs={
+                    'class': 'money form-control',
+                    'maxlength': 500,
+                    'placeholder': '0.000,00'
+               }),
           }
 
-     # def clean_nome(self):
-     #      nome = self.cleaned_data.get('nome') #novo valor ao adicionar
-     #      # if not self.instance.pk:   # Verifica se exite id, caso não exita verificar o valor colocado se já existe ou não
-     #      #      if Cliente.objects.filter(nome=nome).exists():
-     #      #           raise forms.ValidationError("Já existe um cliente com esse nome.")
-     #      # print(nome)
-     #      # if self.instance.pk:
-     #      #      if nome != self.instance.nome:
-     #      #           print(self.instance.nome) #valor antigo
-     #      #           self.instance.nome = nome  # Atualiza o valor antigo com o novo
-     #      #           self.instance.save()  # Salva a alteração no banco
-     #      #           self._changed = True  # Marca que houve alteração
-     #      #      elif len(nome) < 3:
-     #      #           raise forms.ValidationError("O nome deve ter pelo menos 3 caracteres.")
-     #      #      elif Cliente.objects.filter(nome=nome).exists():
-     #      #           raise forms.ValidationError("Já existe um cliente com esse nome.")
+          def __init__(self, *args, **kwargs):
+               super(ProdutoForm, self).__init__(*args, **kwargs)
+               self.fields['preco'].localize = True
+               self.fields['preco'].widget.is_localized = True
 
-          
-     #      return nome
-     
-     
-     # def clean_cpf(self):
-     #      cpf = self.cleaned_data.get('cpf')
-     #      # if not self.instance.pk:
-     #      #      if Cliente.objects.filter(cpf=cpf).exists():
-     #      #           raise forms.ValidationError("Já existe um cliente com esse C.P.F.")
-
-     #      if self.instance.pk:
-     #           if len(cpf) != 14:
-     #                raise forms.ValidationError("Esta faltando numero no seu CPF.")
-     #      return cpf
-     
-     # def clean_datanasc(self):
-     #      datanasc = self.cleaned_data.get('datanasc')
-     #      if datanasc >= date.today():
-     #           raise forms.ValidationError("A data de nascimento não pode ser maior que a data atual.")
-     #      return datanasc
-
-     
+   
 
      
      # def clean(self):
