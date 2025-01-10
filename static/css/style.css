@@ -110,3 +110,11 @@ h5{
     margin-bottom: 10.5rem; /* Ajuste o valor conforme necessário */
     padding: 5px;
 }
+
+.style_list td{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+

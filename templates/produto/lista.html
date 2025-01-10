@@ -11,21 +11,26 @@
         <thead class="thead-dark">
             <tr>
                 <th scope="col">ID</th>
+                <th scope="col">#</th>
                 <th scope="col">Nome</th>
                 <th scope="col">Preço(R$)</th>
                 <th scope="col">Categoria</th>
+                <th scope="col">Qtde</th>
                 <th scope="col">Ações</th>
             </tr>
         </thead>
         <tbody>
             {% for produto in listaProduto %}
             <tr>
-                <td>{{produto.id}}</td>
+                <td class="style_list">{{produto.id}}</td>
+                <td><img src="{{ produto.img_base64 }}" width="55" height="55" class="style_list"></td>
                 <td>{{produto.nome}}</td>
                 <td>{{produto.preco}}</td>
                 <td>{{produto.categoria}}</td>
+                <td>{{ produto.estoque.qtde }}</td>
                 <td>
                     <button type="button" class="btn btn-info" onclick="location.href='{% url 'detalhe_produto' produto.id%}'">Detalhes</button>
+                    <button type="button" class="btn btn-success" onclick="locarion.href='{% url 'ajustar_estoque' produto.id%}'">Estoque</button>
                     <button type="button" class="btn btn-warning" onclick="location.href='{% url 'editar_produto' produto.id %}'">Alterar</button>
                     <button type="button" class="btn btn-danger" onclick="confirmClose('{% url 'remover_produto' produto.id %}')">Excluir</button>
                 </td>

@@ -32,6 +32,23 @@ class Produto(models.Model):
 
     def __str__(self):
         return self.nome
+    
+class Estoque(models.Model):
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    qtde = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.produto.nome} - Quantidade: {self.qtde}'
+
+    @property
+    def estoque(self):
+        estoque_item, flag_created = Estoque.objects.get_or_create(produto=self, defaults={'qtde': 0})
+        if(flag_created == True):
+            print('Criando novo produto.')
+        else:
+            print("Utilizando valor do estoque.")
+        
+        return estoque_item,flag_created
 
 
 
