@@ -206,7 +206,6 @@ def detalhe_produto(request, id):
 def ajustar_estoque(request, id):
     produto = Produto.objects.get(pk=id)
     estoque = produto.estoque 
-    print(f'olalsdjhkklajsbfjkbdksbfd:: {estoque}')
     if request.method == 'POST':
         form = EstoqueForm(request.POST, instance=estoque)
         if form.is_valid():
