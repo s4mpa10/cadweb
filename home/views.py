@@ -173,7 +173,8 @@ def editar_produto(request, id):
             produto = form.save()
             listaProduto=[]
             listaProduto.append(produto)
-            return render(request, 'produto/lista.html', {'listaProduto':listaProduto,})
+            # return render(request, 'produto/lista.html', {'listaProduto':listaProduto,})
+            return redirect('listaProduto')
 
     else: 
         form = ProdutoForm(instance=produto)
@@ -203,15 +204,16 @@ def detalhe_produto(request, id):
 #Ajustar estoque: 
 
 def ajustar_estoque(request, id):
-    produto = produto = Produto.objects.get(pk=id)
-    estoque = produto.estoque # pega o objeto estoque relacionado ao produto
+    produto = Produto.objects.get(pk=id)
+    estoque = produto.estoque 
+    print(f'olalsdjhkklajsbfjkbdksbfd:: {estoque}')
     if request.method == 'POST':
         form = EstoqueForm(request.POST, instance=estoque)
         if form.is_valid():
             estoque = form.save()
-            lista = []
-            lista.append(estoque.produto) 
-            return render(request, 'produto/lista.html', {'listaProduto': lista})
+            listaProduto = []
+            listaProduto.append(estoque.produto) 
+            return render(request, 'produto/lista.html', {'listaProduto': listaProduto})
     else:
          form = EstoqueForm(instance=estoque)
     return render(request, 'produto/estoque.html', {'form': form,})

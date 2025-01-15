@@ -1,4 +1,4 @@
-{% extensd "base.html" %}
+{% extends "base.html" %}
 
 {% block titulo_conteudo %} Ajuste de Estoque {% endblock titulo_conteudo%}
 
@@ -8,14 +8,12 @@
     <span class="form-control"> {{form.instance.produto.nome}}</span>
 </p>
 <form method="post">
-    {% crsf_token %}
+    {% csrf_token %}    
     {{ form.as_p}}
 
-    <button class="btn btn-success" type="submit"> Salvar </button>
+    <button class="btn btn-primary" type="submit"> Salvar </button>
     <button class="btn btn-secondary" type="submit" onclick="location.href='{% url 'listaProduto' %}'"> Voltar </button>
 
 </form>
 
 {% endblock conteudo %}
-
-{% block javascript %} {% endblock javascript %}
