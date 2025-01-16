@@ -212,7 +212,8 @@ def ajustar_estoque(request, id):
             estoque = form.save()
             listaProduto = []
             listaProduto.append(estoque.produto) 
-            return render(request, 'produto/lista.html', {'listaProduto': listaProduto})
+            return redirect('listaProduto')
+            # return render(request, 'produto/lista.html', {'listaProduto': listaProduto})
     else:
          form = EstoqueForm(instance=estoque)
     return render(request, 'produto/estoque.html', {'form': form,})
