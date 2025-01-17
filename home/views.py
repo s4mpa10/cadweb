@@ -218,3 +218,8 @@ def ajustar_estoque(request, id):
          form = EstoqueForm(instance=estoque)
     return render(request, 'produto/estoque.html', {'form': form,})
 
+
+# Teste 
+def teste1(request):
+    return render(request, 'testes/teste1.html')
+
