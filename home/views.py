@@ -4,6 +4,8 @@ from .models import *
 from .forms import *
 from django.http import JsonResponse
 from django.apps import apps
+# from datetime import date 
+import datetime
 
 def index(request):
     return render(request,'index.html')
@@ -248,4 +250,64 @@ def teste3(request):
     return render(request, 'testes/teste3.html')
 
 
+def pedido(request):
+    listaPedido = Pedido.objects.all().order_by('-id')
+    return render(request, 'pedido/lista.html', {'listaPedido': listaPedido})
 
+
+def novo_pedido(request,id):
+    if request.method == 'GET':
+        try:
+            cliente = Cliente.objects.get(pk=id)
+        except Cliente.DoesNotExist:
+            messages.error(request, 'Registro não encontrado')
+            return redirect('cliente')  
+        pedido = Pedido(cliente=cliente)
+        form = PedidoForm(instance=pedido)
+        return render(request, 'pedido/formulario.html',{'form': form,})
+    else: 
+        form = PedidoForm(request.POST)
+        if form.is_valid():
+            pedido = form.save()
+            return redirect('listaPedido')
+        
+def detalhe_pedido(request, id):
+    try:
+        pedido = get_object_or_404(Pedido, pk=id)
+    except:
+        messages.error(request, 'Registro não encontrado')
+        return redirect('listaPedido')
+
+    return render(request, 'pedido/detalhes.html', {'pedido':pedido,})
+
+def editar_pedido(request, id):
+    try:
+        pedido = Pedido.objects.get(pk=id)
+    except:
+        messages.error(request, 'Registro não encontrado')
+        return redirect('listaPedido')
+
+    if (request.method == 'POST'):
+        form = PedidoForm(request.POST, instance=pedido)
+        if form.is_valid():
+            produto = form.save()
+            listaPedido=[]
+            listaPedido.append(produto)
+            # return render(request, 'produto/lista.html', {'listaProduto':listaProduto,})
+            return redirect('listaPedido')
+
+    else: 
+        form = PedidoForm(instance=pedido)
+    
+    return render(request, 'pedido/formulario.html', {'form':form,})
+
+def remover_pedido(request, id):
+    try:
+        pedido = Pedido.objects.get(pk=id)
+        pedido.delete()
+        messages.success(request, 'Exclusão realizda com Sucesso.')
+    except:
+        messages.error(request, 'Registro não encontrado')
+        return redirect('listaPedido')
+    
+    return redirect('listaPedido')
