@@ -271,14 +271,25 @@ def novo_pedido(request,id):
             pedido = form.save()
             return redirect('listaPedido')
         
-def detalhe_pedido(request, id):
+def detalhes_pedido(request, id):
     try:
-        pedido = get_object_or_404(Pedido, pk=id)
-    except:
+        pedido = Pedido.objects.get(pk=id)
+    except Pedido.DoesNotExist:
         messages.error(request, 'Registro não encontrado')
-        return redirect('listaPedido')
+        return redirect('pedido')
+    
+    if request.method == 'GET':
+        itemPedido = ItemPedido(pedido=pedido)
+        form = ItemPedidoForm(instance=itemPedido)
+    else:
+        form = ItemPedidoForm(request.POST)
 
-    return render(request, 'pedido/detalhes.html', {'pedido':pedido,})
+    contexto = {
+        'pedido': pedido,
+        'form': form,
+    }
+
+    return render(request, 'pedido/detalhes.html', contexto)
 
 def editar_pedido(request, id):
     try:
@@ -311,3 +322,5 @@ def remover_pedido(request, id):
         return redirect('listaPedido')
     
     return redirect('listaPedido')
+
+
