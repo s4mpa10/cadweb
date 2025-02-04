@@ -271,41 +271,80 @@ def novo_pedido(request,id):
             pedido = form.save()
             return redirect('listaPedido')
         
+# def detalhes_pedido(request, id):
+#     try:
+#         pedido = Pedido.objects.get(pk=id)
+#     except Pedido.DoesNotExist:
+#         messages.error(request, 'Registro não encontrado')
+#         return redirect('listaPedido')   
+    
+#     if request.method == 'GET':
+#         itemPedido = ItemPedido(pedido=pedido)
+#         form = ItemPedidoForm(instance=itemPedido)
+#     else: # method Post
+#         form = ItemPedidoForm(request.POST)
+#         if form.is_valid():
+#             item_pedido = form.save(commit=False) # commit=False retorna o objeto item_pedido vindo do form para fazermos modificações adicionais antes de salvá-la, colocar o preço do produto, verificar estoque.
+#             item_pedido.preco = item_pedido.produto.preco # acessando o produto do relacionamento
+#             try:
+#                 if item_pedido.produto.estoque >= item_pedido.qtde:
+#                         item_pedido.produto.estoque = item_pedido.produto.estoque -  item_pedido.qtde
+#                         item_pedido.save()
+#                 return item_pedido.produto.estoque
+#             except:
+#                 messages.error(request, 'Quantidade pedida é insuficientes para o que tem no estoque.')
+#                 # exibe uma mensagem informando sobre isso não ter em estoque
+#             # realizar aqui o tratamento do estoque, para isso
+#             # Pegar o estoque (item_pedido.produto.estoque do relacionamento) atual 
+#             # verificar se a quantidade (item_pedido.produto.estoque.qtde) é suficiente para o item solicitado (item_pedido.qtde)
+#             # Se não houver estoque suficiente, você pode adicionar uma mensagem de erro e não salvar a operação
+#             # Se sim, decrementar a quantidade do item no estoque do produto e salvar os objetos estoque e item_pedido
+#         else:
+#              messages.error(request, 'Erro ao adicionar produto')
+                  
+#     contexto = {
+#         'pedido': pedido,
+#         'form': form,
+#     }
+#     return render(request, 'pedido/detalhes.html',contexto )
+
 def detalhes_pedido(request, id):
     try:
         pedido = Pedido.objects.get(pk=id)
     except Pedido.DoesNotExist:
         messages.error(request, 'Registro não encontrado')
-        return redirect('listaPedido')   
+        return redirect('pedido')  # Redireciona para a listagem    
     
     if request.method == 'GET':
         itemPedido = ItemPedido(pedido=pedido)
         form = ItemPedidoForm(instance=itemPedido)
-    else: # method Post
+    else:  # method Post
         form = ItemPedidoForm(request.POST)
         if form.is_valid():
-            item_pedido = form.save(commit=False) # commit=False retorna o objeto item_pedido vindo do form para fazermos modificações adicionais antes de salvá-la, colocar o preço do produto, verificar estoque.
-            item_pedido.preco = item_pedido.produto.preco # acessando o produto do relacionamento
-            if item_pedido.produto.estoque >= item_pedido.qtde:
-                item_pedido.produto.estoque = item_pedido.produto.estoque -  item_pedido.qtde
-                item_pedido.save()
-                return item_pedido.produto.estoque
+            item_pedido = form.save(commit=False)  # commit=False permite modificações antes de salvar
+            item_pedido.preco = item_pedido.produto.preco  # Acessando o preço do produto relacionado
+            
+            # Verificação do estoque
+            print (f'Quantidade pedido: {item_pedido.qtde}')
+            print (f'Estoque: {item_pedido.produto.estoque.qtde}')
+            if item_pedido.qtde > item_pedido.produto.estoque.qtde:
+                messages.error(request, 'Estoque insuficiente para este produto')
             else:
-                messages.error(request, 'Quantidade pedida é insuficientes para o que tem no estoque.')
-                # exibe uma mensagem informando sobre isso não ter em estoque
-            # realizar aqui o tratamento do estoque, para isso
-            # Pegar o estoque (item_pedido.produto.estoque do relacionamento) atual 
-            # verificar se a quantidade (item_pedido.produto.estoque.qtde) é suficiente para o item solicitado (item_pedido.qtde)
-            # Se não houver estoque suficiente, você pode adicionar uma mensagem de erro e não salvar a operação
-            # Se sim, decrementar a quantidade do item no estoque do produto e salvar os objetos estoque e item_pedido
+                # Decrementando a quantidade do estoque
+                item_pedido.produto.estoque.qtde = item_pedido.produto.estoque.qtde - item_pedido.qtde
+                item_pedido.produto.estoque.save()  # Salvando a atualização do estoque
+                item_pedido.save()  # Salvando o item do pedido
+                print (f'atualizado: {item_pedido.produto.estoque.qtde}')
+
+                messages.success(request, 'Produto adicionado com sucesso!')
         else:
-             messages.error(request, 'Erro ao adicionar produto')
+            messages.error(request, 'Erro ao adicionar produto')
                   
     contexto = {
         'pedido': pedido,
         'form': form,
     }
-    return render(request, 'pedido/detalhes.html',contexto )
+    return render(request, 'pedido/detalhes.html', contexto)
 
 
 def editar_pedido(request, id):
