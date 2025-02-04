@@ -74,6 +74,14 @@ class Pedido(models.Model):
             return self.data_pedido.strftime('%d/%m/%Y %H:%M')
         return None
 
+    @property
+    def total(self):
+        total = sum(item.qtde * item.preco for item in self.itempedido_set.all())
+        return total
+    
+    @property
+    def qtdeItens(self):
+        return self.itempedido_set.count()
 
 
 class ItemPedido(models.Model):
@@ -84,7 +92,16 @@ class ItemPedido(models.Model):
 
     def __str__(self):
         return f"{self.produto.nome} (Qtde: {self.qtde}) - Preço Unitário: {self.preco}"
+    
+    @property
+    def calculoTotal(self):
+        total = self.qtde * self.preco
+        return total
 
+    @property
+    def total(self):
+        valor_total = sum(self.calculoTotal)
+        return valor_total
 
 # Modelo de validação de campos
 

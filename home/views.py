@@ -323,18 +323,19 @@ def detalhes_pedido(request, id):
         if form.is_valid():
             item_pedido = form.save(commit=False)  # commit=False permite modificações antes de salvar
             item_pedido.preco = item_pedido.produto.preco  # Acessando o preço do produto relacionado
+            estoque_atual = item_pedido.produto.estoque
             
             # Verificação do estoque
             print (f'Quantidade pedido: {item_pedido.qtde}')
-            print (f'Estoque: {item_pedido.produto.estoque.qtde}')
-            if item_pedido.qtde > item_pedido.produto.estoque.qtde:
+            print (f'Estoque: {estoque_atual.qtde}')
+            if item_pedido.qtde > estoque_atual.qtde:
                 messages.error(request, 'Estoque insuficiente para este produto')
             else:
                 # Decrementando a quantidade do estoque
-                item_pedido.produto.estoque.qtde = item_pedido.produto.estoque.qtde - item_pedido.qtde
-                item_pedido.produto.estoque.save()  # Salvando a atualização do estoque
+                estoque_atual.qtde = estoque_atual.qtde - item_pedido.qtde
+                estoque_atual.save()   # Salvando a atualização do estoque
                 item_pedido.save()  # Salvando o item do pedido
-                print (f'atualizado: {item_pedido.produto.estoque.qtde}')
+                print (f'atualizado: {estoque_atual.qtde}')
 
                 messages.success(request, 'Produto adicionado com sucesso!')
         else:
@@ -367,6 +368,26 @@ def editar_pedido(request, id):
         form = PedidoForm(instance=pedido)
     
     return render(request, 'pedido/formulario.html', {'form':form,})
+
+def remover_item_pedido(request, id):
+    try:
+        item_pedido = ItemPedido.objects.get(pk=id)
+    except ItemPedido.DoesNotExist:
+        # Caso o registro não seja encontrado, exibe a mensagem de erro
+        messages.error(request, 'Registro não encontrado')
+        return redirect('detalhes_pedido', id=id)
+    
+    pedido_id = item_pedido.pedido.id  # Armazena o ID do pedido antes de remover o item
+    estoque = item_pedido.produto.estoque  # Obtém o estoque do produto
+    estoque.qtde += item_pedido.qtde  # Devolve a quantidade do item ao estoque
+    estoque.save()  # Salva as alterações no estoque
+    # Remove o item do pedido
+    item_pedido.delete()
+    messages.success(request, 'Operação realizada com Sucesso')
+
+
+    # Redireciona de volta para a página de detalhes do pedido
+    return redirect('detalhes_pedido', id=pedido_id)
 
 def remover_pedido(request, id):
     try:
