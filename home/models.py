@@ -100,8 +100,9 @@ class ItemPedido(models.Model):
 
     @property
     def total(self):
-        valor_total = sum(self.calculoTotal)
-        return valor_total
+        total = sum(item.qtde * item.preco for item in self.itempedido_set.all())
+        return total
+
 
 # Modelo de validação de campos
 
