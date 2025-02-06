@@ -2,6 +2,11 @@ import locale
 from django.db import models
 # from .forms import *
 
+# Modelo de validação de campos
+
+# class MeuFormulario(forms.Form):
+#     nome_completo = forms.CharField(validators=[validar_nome()])
+
 class Categoria(models.Model): 
     nome = models.CharField(max_length = 100)
     ordem = models.IntegerField()
@@ -82,7 +87,18 @@ class Pedido(models.Model):
     @property
     def qtdeItens(self):
         return self.itempedido_set.count()
+    
+    @property
+    def pagamentos(self):
+        return Pagamento.objects.filter(pedido=self)
 
+    @property
+    def total_pago(self):
+        total = sum(pagamento.valor for pagamento in self.pagamentos.all())
+        return total
+    
+    @property
+    def debito
 
 class ItemPedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)    
@@ -104,7 +120,31 @@ class ItemPedido(models.Model):
         return total
 
 
-# Modelo de validação de campos
+class Pagamento(models.Model):
+    DINHEIRO = 1
+    CREDITO = 2
+    DEBITO = 3
+    PIX = 4
+    TICKET = 5
+    OUTRA = 6
 
-# class MeuFormulario(forms.Form):
-#     nome_completo = forms.CharField(validators=[validar_nome()])
+    FORMA_CHOICES = [
+        (DINHEIRO, 'Dinheiro'),
+        (CREDITO, 'Credito'),
+        (DEBITO, 'Debito'),
+        (PIX, 'Pix'),
+        (TICKET, 'Ticket'),
+        (OUTRA, 'Outra'),
+    ]
+
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE) 
+    forma = models.IntegerField(choices=FORMA_CHOICES)
+    valor = models.DecimalField(max_digits = 10, max_length = 2, blank = False )
+    data_pgto = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def data_pgtof(self):
+        """Retorna a data formatada: DD/MM/AAAA HH:MM"""
+        if self.data_pgto:
+            return self.data_pgto.strftime('%d/%m/%Y %H:%M')
+        return None

@@ -3,6 +3,21 @@ from django import forms
 from .models import *
 from datetime import date
 
+# def clean(self):
+#      cleaned_data = super().clean()
+#      nome = cleaned_data().get('nome')
+#      ordem = cleaned.data().get('ordem')
+
+#      if len(nome) < 3:
+#           raise forms.ValidationError("O nome deve ter pelo menos 3 caracteres.")
+#      return nome
+
+# Validação generica:
+# def validar_valor(valor):
+#      if len(valor) < 3:
+#           raise forms.ValidationError("O campo deve ter pelo menos 3 caracteres.")
+#      return valor
+
 class CategoriaForm(forms.ModelForm):
      class Meta:
           model = Categoria
@@ -127,17 +142,9 @@ class ItemPedidoForm(forms.ModelForm):
                'qtde': forms.TextInput(attrs={'class': 'inteiro form-control',}),
           }
      
-     # def clean(self):
-     #      cleaned_data = super().clean()
-     #      nome = cleaned_data().get('nome')
-     #      ordem = cleaned.data().get('ordem')
+     def clean_qtde(self):
+        qtde = self.cleaned_data.get('qtde')
+        if not isinstance(qtde, int) or qtde < 0:
+            raise ValidationError('A quantidade deve ser um número inteiro positivo.')
+        return qtde
 
-     #      if len(nome) < 3:
-     #           raise forms.ValidationError("O nome deve ter pelo menos 3 caracteres.")
-     #      return nome
-
-     # Validação generica:
-     # def validar_valor(valor):
-     #      if len(valor) < 3:
-     #           raise forms.ValidationError("O campo deve ter pelo menos 3 caracteres.")
-     #      return valor
