@@ -99,7 +99,7 @@ class Pedido(models.Model):
     
     @property
     def debito(self):
-        valor_debito = self.total - self.total_pago
+        valor_debito = self.total - self.total_pago 
         return valor_debito
 
 class ItemPedido(models.Model):

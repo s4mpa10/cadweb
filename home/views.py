@@ -255,30 +255,50 @@ def pedido(request):
     return render(request, 'pedido/lista.html', {'listaPedido': listaPedido})
 
 
+# def novo_pedido(request,id):
+#     if request.method == 'GET':
+#         try:
+#             cliente = Cliente.objects.get(pk=id)
+#         except Cliente.DoesNotExist:
+#             messages.error(request, 'Registro não encontrado')
+#             return redirect('cliente')  
+#         pedido = Pedido(cliente=cliente)
+#         form = PedidoForm(instance=pedido)
+#         return render(request, 'pedido/formulario.html',{'form': form,})
+#     else: 
+#         form = PedidoForm(request.POST)
+#         if form.is_valid():
+#             pedido = form.save()
+#             p = Pedido.objects.get(pk=id)
+#             form = PedidoForm(instance=p)
+#             contexto = {
+#                 'form': form,
+#                 'pedido': p
+#             }
+#         return redirect('detalhes_pedido')
+#             # return render(request, 'pedido/detalhes.html',contexto)
+
 def novo_pedido(request,id):
-    cliente = Cliente.objects.get(pk=id)
     if request.method == 'GET':
         try:
             cliente = Cliente.objects.get(pk=id)
         except Cliente.DoesNotExist:
+            # Caso o registro não seja encontrado, exibe a mensagem de erro
             messages.error(request, 'Registro não encontrado')
-            return redirect('cliente')  
+            return redirect('cliente')  # Redireciona para a listagem
+        # cria um novo pedido com o cliente selecionado
         pedido = Pedido(cliente=cliente)
-        form = PedidoForm(instance=pedido)
+        form = PedidoForm(instance=pedido)# cria um formulario com o novo pedido
         return render(request, 'pedido/formulario.html',{'form': form,})
-    else: 
+    else: # se for metodo post, salva o pedido.
         form = PedidoForm(request.POST)
         if form.is_valid():
             pedido = form.save()
-            p = Pedido.objects.get(pk=id)
-            form = PedidoForm(instance=p)
-            contexto = {
-                'form': form,
-                'pedido': p
-            }
-            return redirect('detalhes_pedido')
-            # return render(request, 'pedido/detalhes.html',contexto)
-        
+            return redirect('listaPedido')
+
+
+
+
 # def detalhes_pedido(request, id):
 #     try:
 #         pedido = Pedido.objects.get(pk=id)
@@ -481,6 +501,8 @@ def form_pagamento(request,id):
             form.save()
             
             messages.success(request, 'Operação realizada com Sucesso')
+            pagamento = Pagamento(pedido=pedido)
+            form = PagamentoForm(instance=pagamento)
     else: 
         pagamento = Pagamento(pedido=pedido)
         form = PagamentoForm(instance=pagamento)
