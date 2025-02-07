@@ -98,7 +98,9 @@ class Pedido(models.Model):
         return total
     
     @property
-    def debito
+    def debito(self):
+        valor_debito = self.total - self.total_pago
+        return valor_debito
 
 class ItemPedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)    
@@ -139,7 +141,7 @@ class Pagamento(models.Model):
 
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE) 
     forma = models.IntegerField(choices=FORMA_CHOICES)
-    valor = models.DecimalField(max_digits = 10, max_length = 2, blank = False )
+    valor = models.DecimalField(max_digits = 10, decimal_places=2, blank = False )
     data_pgto = models.DateTimeField(auto_now_add=True)
 
     @property

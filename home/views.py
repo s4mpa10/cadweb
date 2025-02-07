@@ -256,6 +256,7 @@ def pedido(request):
 
 
 def novo_pedido(request,id):
+    cliente = Cliente.objects.get(pk=id)
     if request.method == 'GET':
         try:
             cliente = Cliente.objects.get(pk=id)
@@ -269,7 +270,14 @@ def novo_pedido(request,id):
         form = PedidoForm(request.POST)
         if form.is_valid():
             pedido = form.save()
-            return redirect('listaPedido')
+            p = Pedido.objects.get(pk=id)
+            form = PedidoForm(instance=p)
+            contexto = {
+                'form': form,
+                'pedido': p
+            }
+            return redirect('detalhes_pedido')
+            # return render(request, 'pedido/detalhes.html',contexto)
         
 # def detalhes_pedido(request, id):
 #     try:
@@ -339,14 +347,15 @@ def detalhes_pedido(request, id):
                 print (f'atualizado: {estoque_atual.qtde}')
 
                 messages.success(request, 'Produto adicionado com sucesso!')
+                itemPedido = ItemPedido(pedido=pedido)
+                form = ItemPedidoForm(instance=itemPedido)
         else:
             messages.error(request, 'Erro ao adicionar produto')
 
-    itens_pedido = pedido.itempedido_set.all()  
+
     contexto = {
         'pedido': pedido,
         'form': form,
-        'itens_pedido': itens_pedido,
     }
     return render(request, 'pedido/detalhes.html', contexto)
 
@@ -457,3 +466,30 @@ def editar_item_pedido(request, id):
         'item_pedido': item_pedido,
     }
     return render(request, 'pedido/detalhes.html', contexto)
+
+def form_pagamento(request,id):
+    try:
+        pedido = Pedido.objects.get(pk=id)
+    except Pedido.DoesNotExist:
+        # Caso o registro não seja encontrado, exibe a mensagem de erro
+        messages.error(request, 'Registro não encontrado')
+        return redirect('pedido')  # Redireciona para a listagem    
+    
+    if request.method == 'POST':
+        form = PagamentoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            
+            messages.success(request, 'Operação realizada com Sucesso')
+    else: 
+        pagamento = Pagamento(pedido=pedido)
+        form = PagamentoForm(instance=pagamento)
+        
+        
+    # prepara o formulário para um novo pagamento
+
+    contexto = {
+        'pedido': pedido,
+        'form': form,
+    }    
+    return render(request, 'pedido/pagamento.html',contexto)
