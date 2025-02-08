@@ -255,29 +255,6 @@ def pedido(request):
     return render(request, 'pedido/lista.html', {'listaPedido': listaPedido})
 
 
-# def novo_pedido(request,id):
-#     if request.method == 'GET':
-#         try:
-#             cliente = Cliente.objects.get(pk=id)
-#         except Cliente.DoesNotExist:
-#             messages.error(request, 'Registro não encontrado')
-#             return redirect('cliente')  
-#         pedido = Pedido(cliente=cliente)
-#         form = PedidoForm(instance=pedido)
-#         return render(request, 'pedido/formulario.html',{'form': form,})
-#     else: 
-#         form = PedidoForm(request.POST)
-#         if form.is_valid():
-#             pedido = form.save()
-#             p = Pedido.objects.get(pk=id)
-#             form = PedidoForm(instance=p)
-#             contexto = {
-#                 'form': form,
-#                 'pedido': p
-#             }
-#         return redirect('detalhes_pedido')
-#             # return render(request, 'pedido/detalhes.html',contexto)
-
 def novo_pedido(request,id):
     if request.method == 'GET':
         try:
@@ -294,47 +271,11 @@ def novo_pedido(request,id):
         form = PedidoForm(request.POST)
         if form.is_valid():
             pedido = form.save()
-            return redirect('listaPedido')
+            
+            return redirect('detalhes_pedido', id=pedido.pk)
 
+    return render(request, 'pedido/formulario.html', {'form': form})
 
-
-
-# def detalhes_pedido(request, id):
-#     try:
-#         pedido = Pedido.objects.get(pk=id)
-#     except Pedido.DoesNotExist:
-#         messages.error(request, 'Registro não encontrado')
-#         return redirect('listaPedido')   
-    
-#     if request.method == 'GET':
-#         itemPedido = ItemPedido(pedido=pedido)
-#         form = ItemPedidoForm(instance=itemPedido)
-#     else: # method Post
-#         form = ItemPedidoForm(request.POST)
-#         if form.is_valid():
-#             item_pedido = form.save(commit=False) # commit=False retorna o objeto item_pedido vindo do form para fazermos modificações adicionais antes de salvá-la, colocar o preço do produto, verificar estoque.
-#             item_pedido.preco = item_pedido.produto.preco # acessando o produto do relacionamento
-#             try:
-#                 if item_pedido.produto.estoque >= item_pedido.qtde:
-#                         item_pedido.produto.estoque = item_pedido.produto.estoque -  item_pedido.qtde
-#                         item_pedido.save()
-#                 return item_pedido.produto.estoque
-#             except:
-#                 messages.error(request, 'Quantidade pedida é insuficientes para o que tem no estoque.')
-#                 # exibe uma mensagem informando sobre isso não ter em estoque
-#             # realizar aqui o tratamento do estoque, para isso
-#             # Pegar o estoque (item_pedido.produto.estoque do relacionamento) atual 
-#             # verificar se a quantidade (item_pedido.produto.estoque.qtde) é suficiente para o item solicitado (item_pedido.qtde)
-#             # Se não houver estoque suficiente, você pode adicionar uma mensagem de erro e não salvar a operação
-#             # Se sim, decrementar a quantidade do item no estoque do produto e salvar os objetos estoque e item_pedido
-#         else:
-#              messages.error(request, 'Erro ao adicionar produto')
-                  
-#     contexto = {
-#         'pedido': pedido,
-#         'form': form,
-#     }
-#     return render(request, 'pedido/detalhes.html',contexto )
 
 def detalhes_pedido(request, id):
     try:
@@ -501,6 +442,7 @@ def form_pagamento(request,id):
             form.save()
             
             messages.success(request, 'Operação realizada com Sucesso')
+
             pagamento = Pagamento(pedido=pedido)
             form = PagamentoForm(instance=pagamento)
     else: 
@@ -515,3 +457,17 @@ def form_pagamento(request,id):
         'form': form,
     }    
     return render(request, 'pedido/pagamento.html',contexto)
+
+
+def remover_pagamento(request, id):
+    try:
+        pagamento = Pagamento.objects.get(pk=id)
+        pagamento.delete()
+        messages.success(request, 'Exclusão realizda com Sucesso.')
+        pagamento_id = pagamento.pedido.id
+    except:
+        messages.error(request, 'Registro não encontrado')
+        return redirect('form_pagamento', id=pagamento_id)
+    
+    return redirect('form_pagamento', id=pagamento_id)
+

@@ -79,7 +79,7 @@ class Pedido(models.Model):
             return self.data_pedido.strftime('%d/%m/%Y %H:%M')
         return None
 
-    @property
+    @property 
     def total(self):
         total = sum(item.qtde * item.preco for item in self.itempedido_set.all())
         return total

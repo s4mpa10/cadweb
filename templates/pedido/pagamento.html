@@ -46,8 +46,8 @@
 
         <td>
             <a href="" class="btn btn-warning btn-sm">Editar</a>
-            <a href="" class="btn btn-danger btn-sm" 
-            onclick="return confirm('Tem certeza que deseja remover este registro?');">Excluir</a>
+            <a onclick="confirmClose('{% url 'remover_pagamento' pagamento.id %}')" class="btn btn-danger btn-sm" 
+            >Excluir</a>
         </td>
         </tr>
         {% endfor %}
@@ -66,4 +66,12 @@
 
 
 {% block javascript %}
+    <script> 
+        function confirmClose(url) {
+            const confirmar = confirm("Tem certeza que deseja remover este item?");
+            if (confirmar) {
+                window.location.href = url; 
+            }
+        }
+    </script>
 {% endblock javascript %}

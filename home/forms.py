@@ -168,8 +168,17 @@ class PagamentoForm(forms.ModelForm):
           self.fields['valor'].localize = True 
           self.fields['valor'].widget.is_localized = True 
 
+     
      def clean_valor(self):
-          valor = self.cleaned_data.get('valor')
-          if valor  < 0:
-               raise forms.ValidationError("O valor deve ser maior que zero.")
-          return valor
+        valor = self.cleaned_data.get('valor')
+        pedido = self.cleaned_data.get('pedido')
+
+        if valor <= 0:
+            raise forms.ValidationError("O valor deve ser maior que zero.")
+
+        if pedido:
+            debito = pedido.debito  # Obtém o valor do débito do pedido
+            if valor > debito:
+                raise forms.ValidationError("O valor do pagamento não pode ser maior que o débito do pedido.")
+
+        return valor
