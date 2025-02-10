@@ -5,19 +5,21 @@ from .forms import *
 from django.http import JsonResponse
 from django.apps import apps
 # from datetime import date 
+from django.contrib.auth.decorators import login_required
 import datetime
 
+@login_required
 def index(request):
     return render(request,'index.html')
 
-# @login_required
+@login_required
 def categoria(request): 
     contexto = {
         'lista': Categoria.objects.all().order_by('-id'),
     }
     return render(request, 'categoria/lista.html', contexto)
 
-# @login_required
+@login_required
 def form_categoria(request):
     if (request.method == 'POST'):
         form = CategoriaForm(request.POST)
@@ -305,9 +307,10 @@ def detalhes_pedido(request, id):
                 # Decrementando a quantidade do estoque
                 estoque_atual.qtde = estoque_atual.qtde - item_pedido.qtde
                 item_pedido.produto.estoque.qtde = estoque_atual
-                item_pedido.produto.estoque.save()   # Salvando a atualização do estoque
+                estoque_atual.save()
+                # item_pedido.produto.estoque.save()   # Salvando a atualização do estoque
                 item_pedido.save()  # Salvando o item do pedido
-                print (f'atualizado: {estoque_atual.qtde}')
+                print (f'atualizado: {item_pedido.produto.estoque.qtde}')
 
                 messages.success(request, 'Produto adicionado com sucesso!')
                 itemPedido = ItemPedido(pedido=pedido)
@@ -473,3 +476,7 @@ def remover_pagamento(request, id):
     
     return redirect('form_pagamento', id=pagamento_id)
 
+# @login_required
+# def user_logout(request):
+#     logout(request)
+#     return redirect('login')
