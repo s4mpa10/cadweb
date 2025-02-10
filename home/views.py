@@ -10,14 +10,14 @@ import datetime
 def index(request):
     return render(request,'index.html')
 
-@login_required
+# @login_required
 def categoria(request): 
     contexto = {
         'lista': Categoria.objects.all().order_by('-id'),
     }
     return render(request, 'categoria/lista.html', contexto)
 
-@login_required
+# @login_required
 def form_categoria(request):
     if (request.method == 'POST'):
         form = CategoriaForm(request.POST)
