@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.apps import apps
 # from datetime import date 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 import datetime
 
 @login_required
@@ -477,6 +478,87 @@ def form_pagamento(request,id):
     return render(request, 'pedido/pagamento.html',contexto)
 
 @login_required
+def editar_pagamento(request, id):
+    try:
+        pagamento = Pagamento.objects.get(pk=id)
+        pagamento_id = pagamento.pedido.id
+        quantidade_anterior_paga = pagamento.valor  # Armazena a quantidade anterior
+        print(f'anteiror: {quantidade_anterior_paga}')
+    except:
+        messages.error(request, 'Registro não encontrado')
+        return redirect('form_pagamento', id=pagamento_id)
+
+    if (request.method == 'POST'):
+        form = PagamentoForm(request.POST, instance=pagamento)
+        if form.is_valid():
+            pagamento_atual = pagamento.pedido.total
+            print(f'soma: {pagamento_atual}')
+
+            pagamento_atual = pagamento_atual - pagamento.valor
+
+            print(f'Final: {pagamento_atual}')
+            form.save()
+            messages.success(request, "Pagamento atualizado com sucesso!")
+            return redirect('form_pagamento', id=pagamento_id)
+            # return render(request, 'produto/lista.html', {'listaProduto':listaProduto,})
+        else:
+            messages.success(request, "Pagamento atualizado com sucesso!")
+
+    else: 
+        form = PagamentoForm(instance=pagamento)
+    
+    return render(request, 'pedido/pagamento.html', {'form':form,})
+
+
+# quantidade_anterior = item_pedido.qtde  # Armazena a quantidade anterior
+#         if form.is_valid():
+#             item_pedido = form.save(commit=False)  # prepara a instância do item_pedido sem persistir ainda
+#             print(item_pedido.produto.id)
+
+#             nova_quantidade_item = item_pedido.qtde
+#             estoque_atual = item_pedido.produto.estoque.qtde
+
+#             if estoque_atual >= nova_quantidade_item:
+#                 estoque_atual = estoque_atual + quantidade_anterior  
+#                 estoque_atual = estoque_atual - nova_quantidade_item
+
+#                 item_pedido.produto.estoque.qtde = estoque_atual
+
+#                 item_pedido.produto.estoque.save()
+#                 item_pedido.save()
+#                 messages.success(request, 'Operação realizada com Sucesso')
+
+#             else:
+#                 messages.success(request, 'Quantidade em estoque insuficiente para o produto.')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required
 def remover_pagamento(request, id):
     try:
         pagamento = Pagamento.objects.get(pk=id)
@@ -489,7 +571,10 @@ def remover_pagamento(request, id):
     
     return redirect('form_pagamento', id=pagamento_id)
 
-# @login_required
-# def user_logout(request):
-#     logout(request)
-#     return redirect('login')
+
+@login_required(login_url='login')
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+
