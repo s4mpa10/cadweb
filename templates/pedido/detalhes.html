@@ -48,7 +48,7 @@
                 <td style="text-align: center; vertical-align: middle;"><img src="{{ item.produto.img_base64 }}" width="55px" height="auto"></td>
                 <td style="vertical-align: middle;">{{ item.produto.nome }}</td>
                 <td style="text-align: center; vertical-align: middle;">{{ item.qtde }}</td>
-                <td style="text-align: center; vertical-align: middle;">{{ item.preco }}</td>
+                <td style="text-align: center; vertical-align: middle;">{{ item.produto.preco }}</td>
                 <td style="text-align: center; vertical-align: middle;">{{ item.calculoTotal }}</td>
                 <td style="vertical-align: middle;">
                   <a onclick="location.href='{% url 'editar_item_pedido' item.id %}'" class="btn btn-warning btn-sm">Editar</a>
