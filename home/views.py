@@ -398,33 +398,52 @@ def editar_item_pedido(request, id):
         messages.error(request, 'Registro não encontrado')
         return redirect('detalhes_pedido', id=id)
 
-    pedido = item_pedido.pedido  # Obtém o pedido do item
-    quantidade_anterior = item_pedido.qtde  # Armazena a quantidade anterior
-    estoque = item_pedido.produto.estoque  # Obtém o estoque do produto
-
+    pedido = item_pedido.pedido  # Obtém o pedido associado
+    produto_anterior = item_pedido.produto  # Guarda o produto antes da edição
+    quantidade_anterior = item_pedido.qtde  # Guarda a quantidade antes da edição
+    
     if request.method == 'POST':
         form = ItemPedidoForm(request.POST, instance=item_pedido)
+        
         if form.is_valid():
-            item_pedido = form.save(commit=False)  # Prepara a instância do item sem salvar
+            item_pedido = form.save(commit=False)  # Obtém a instância sem salvar ainda
+            novo_produto = item_pedido.produto  # Obtém o novo produto selecionado
+            nova_quantidade = item_pedido.qtde  # Nova quantidade do item
 
-            nova_quantidade_item = item_pedido.qtde  # Nova quantidade informada
+            # Restaurar o estoque do produto anterior antes da atualização
+            produto_anterior_estoque = produto_anterior.estoque
+            produto_anterior_estoque.qtde += quantidade_anterior
+            produto_anterior_estoque.save()
 
-            if estoque.qtde + quantidade_anterior >= nova_quantidade_item:
-                # Reverte a quantidade anterior no estoque e subtrai a nova quantidade
-                estoque.qtde += quantidade_anterior
-                estoque.qtde -= nova_quantidade_item
-
-                estoque.save()  # Salva o novo valor no banco de dados
-                item_pedido.save()  # Salva o item do pedido atualizado
-
-                messages.success(request, 'Operação realizada com sucesso')
+            # Se for o mesmo produto, apenas atualizar a quantidade
+            if produto_anterior == novo_produto:
+                if produto_anterior_estoque.qtde >= nova_quantidade:
+                    produto_anterior_estoque.qtde -= nova_quantidade
+                    produto_anterior_estoque.save()
+                    item_pedido.save()
+                    messages.success(request, 'Item atualizado com sucesso!')
+                else:
+                    messages.error(request, 'Quantidade insuficiente no estoque!')
+                    return redirect('detalhes_pedido', id=pedido.id)
             else:
-                messages.error(request, 'Quantidade em estoque insuficiente para o produto.')
+                # Caso o produto tenha sido alterado, atualizar o estoque do novo produto
+                novo_produto_estoque = novo_produto.estoque
+
+                if novo_produto_estoque.qtde >= nova_quantidade:
+                    novo_produto_estoque.qtde -= nova_quantidade
+                    novo_produto_estoque.save()
+                    
+                    # Salvar o item do pedido atualizado
+                    item_pedido.save()
+                    messages.success(request, 'Produto alterado e estoque atualizado!')
+                else:
+                    messages.error(request, 'Estoque insuficiente para o novo produto!')
+                    return redirect('detalhes_pedido', id=pedido.id)
 
             return redirect('detalhes_pedido', id=pedido.id)
     else:
         form = ItemPedidoForm(instance=item_pedido)
-
+    
     contexto = {
         'pedido': pedido,
         'form': form,
