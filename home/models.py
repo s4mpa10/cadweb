@@ -68,7 +68,7 @@ class Pedido(models.Model):
     ]
 
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    produtos = models.ManyToManyField(Produto, through='ItemPedido')
+    produtos = models.ManyToManyField(Produto, through='itemPedido', related_name='pedidos')
     data_pedido = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=NOVO)
 
@@ -88,7 +88,7 @@ class Pedido(models.Model):
     
     @property
     def qtdeItens(self):
-        return self.itempedido_set.count()
+        return self.itens.count()
     
     @property
     def pagamentos(self):
@@ -127,6 +127,7 @@ class Pedido(models.Model):
     def calculoICMS(self):
         icms = Decimal('0.18')
         calculo = (self.total * icms).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        print(f"TOTAL: {self.total}")
         return calculo
     
     @property
