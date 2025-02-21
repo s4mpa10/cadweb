@@ -150,7 +150,7 @@ class Pedido(models.Model):
     
     @property
     def total_impostos(self):
-        soma_impostos = (self.calculoICMS + self.calculoIPI + self.calculoPIS + self.calculoCONFINS).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        soma_impostos = (self.calculoICMS + self.calculoIPI + self.calculoPIS + self.calculoCONFINS).quantize(Decimal('0.010'), rounding=ROUND_HALF_UP)
         return soma_impostos
     
     @property
