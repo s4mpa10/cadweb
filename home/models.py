@@ -114,15 +114,18 @@ class Pedido(models.Model):
     def chave_acesso(self):
         # Combina o ID do pedido e a data formatada
         if self.id and self.data_pedido_key:
-            dados_comb = f"{self.id}-{self.data_pedido_key}"
+            dados_comb = f"{self.id}{self.data_pedido_key}"
         
             # Cria o hash com sha256
             sha256 = hashlib.sha256()
             sha256.update(dados_comb.encode('utf-8'))  # Codificando a string para bytes
             key_final = f"{self.data_pedido_key}{self.id}{sha256.hexdigest()}"
-            return key_final  # Retorna o hash gerado
+            
+            # Remove caracteres não numéricos
+            key_final_numerico = ''.join(filter(str.isdigit, key_final))
+            return key_final_numerico  # Retorna a chave de acesso contendo apenas números
         return None
-    
+
     @property
     def calculoICMS(self):
         icms = Decimal('0.18')
